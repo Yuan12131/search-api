@@ -12,3 +12,8 @@ app.use(express.static('public'));
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
+
+// CSS 파일 요청에 대한 응답
+app.get('/style.css', (req, res) => {
+  res.sendFile(__dirname + '/public/style.css');
+});
