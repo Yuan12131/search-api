@@ -6,8 +6,74 @@
 </head>
 <body>
     <h1>네이버 뉴스 검색</h1>
-    <input type="text" id="keyword" placeholder="검색어 입력">
-    <button onclick="searchNews()">검색</button>
-    <div id="results"></div>
+    <input type="text" id="searchInput" placeholder="검색어 입력">
+    <button id="searchButton" onclick="searchNews()">검색</button>
+    <div id="resultsDiv"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  const searchButton = document.getElementById('searchButton');
+  const searchInput = document.getElementById('searchInput');
+  const resultsDiv = document.getElementById('resultsDiv');
+
+  function searchNews() {
+    const query = document.getElementById('searchInput').value;
+    if (query) {
+      fetch(`/search/news?query=${query}`)
+        .then(response => response.json())
+        .then(data => {
+          displayResults(data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  }
+
+  function displayResults(data) {
+    const resultsDiv = document.getElementById('resultsDiv');
+    resultsDiv.innerHTML = '';
+
+    if (data.items) {
+      data.items.forEach(item => {
+        const newsItem = document.createElement('div');
+        newsItem.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a><p>${item.description}</p>`;
+        resultsDiv.appendChild(newsItem);
+      });
+    } else {
+      resultsDiv.innerHTML = '검색 결과가 없습니다.';
+    }
+  }
+
+
+  searchButton.addEventListener('click', function() {
+    const query = searchInput.value;
+    if (query) {
+      fetch(`/search/news?query=${query}`)
+        .then(response => response.json())
+        .then(data => {
+          displayResults(data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  });
+
+  function displayResults(data) {
+    resultsDiv.innerHTML = '';
+    if (data.items) {
+      data.items.forEach(item => {
+        const newsItem = document.createElement('div');
+        newsItem.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a><p>${item.description}</p>`;
+        resultsDiv.appendChild(newsItem);
+      });
+    } else {
+      resultsDiv.innerHTML = '검색 결과가 없습니다.';
+    }
+  }
+});
+
+    </script>
 </body>
 </html>
