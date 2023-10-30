@@ -17,3 +17,8 @@ app.get('/', (req, res) => {
 app.get('/style.css', (req, res) => {
   res.sendFile(__dirname + '/public/style.css');
 });
+
+// JavaScript 파일 요청에 대한 응답
+app.get('/script.js', (req, res) => {
+  res.sendFile(__dirname + '/public/script.js');
+});
