@@ -22,3 +22,8 @@ app.get('/style.css', (req, res) => {
 app.get('/script.js', (req, res) => {
   res.sendFile(__dirname + '/public/script.js');
 });
+
+// 404 오류 페이지 설정
+app.use((req, res) => {
+  res.status(404).send('Not Found');
+});
