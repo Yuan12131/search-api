@@ -27,3 +27,8 @@ app.get('/script.js', (req, res) => {
 app.use((req, res) => {
   res.status(404).send('Not Found');
 });
+
+// 서버 시작
+app.listen(port, () => {
+  console.log(`서버 가동중 -> http://localhost:${port}/`);
+});
