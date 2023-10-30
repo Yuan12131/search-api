@@ -6,74 +6,80 @@
 </head>
 <body>
     <h1>네이버 뉴스 검색</h1>
-    <input type="text" id="searchInput" placeholder="검색어 입력">
-    <button id="searchButton" onclick="searchNews()">검색</button>
+    <form id="searchForm">
+      <!-- 검색어 입력 필드 -->
+      <input type="text" id="searchInput" name="query" placeholder="검색어 입력">
+      <!-- 검색 버튼 -->
+      <button type="button" id="searchButton">검색</button>
+    </form>
+    <!-- 검색 결과를 표시할 영역 -->
     <div id="resultsDiv"></div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-  const searchButton = document.getElementById('searchButton');
-  const searchInput = document.getElementById('searchInput');
-  const resultsDiv = document.getElementById('resultsDiv');
+    <script>
+      // HTML 요소 가져오기
+      const searchForm = document.getElementById('searchForm');
+      const searchButton = document.getElementById('searchButton');
+      const searchInput = document.getElementById('searchInput');
+      const resultsDiv = document.getElementById('resultsDiv');
 
-  function searchNews() {
-    const query = document.getElementById('searchInput').value;
-    if (query) {
-      fetch(`/search/news?query=${query}`)
-        .then(response => response.json())
-        .then(data => {
-          displayResults(data);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
-  }
+      // 네이버 API 클라이언트 ID와 시크릿
+      const client_id = '9e_Z7STmxYIcQkv6gSSD';
+      const client_secret = 'WFiNunUoAn';
 
-  function displayResults(data) {
-    const resultsDiv = document.getElementById('resultsDiv');
-    resultsDiv.innerHTML = '';
-
-    if (data.items) {
-      data.items.forEach(item => {
-        const newsItem = document.createElement('div');
-        newsItem.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a><p>${item.description}</p>`;
-        resultsDiv.appendChild(newsItem);
+      // 검색 버튼 클릭 시 실행
+      searchButton.addEventListener('click', function () {
+        searchNews();
       });
-    } else {
-      resultsDiv.innerHTML = '검색 결과가 없습니다.';
-    }
-  }
 
+      // 뉴스 검색 함수
+      function searchNews() {
+        const query = searchInput.value;
+        if (query) {
+          // 네이버 API로 검색 요청 보내기
+          // 사용자가 입력한 검색어를 URL에 포함시켜 검색 요청
+          // { ... } 내부에는 fetch 요청에 대한 설정
+          //  fetch : 사용자가 입력한 검색어를 기반으로 네이버 API에 GET 요청을 보내고, API에서 반환하는 데이터 가져오기
+          fetch(`/search/news?query=${query}`, {
+            method: 'GET',
+            headers: {
+              'X-Naver-Client-Id': client_id, // 네이버 API 클라이언트 ID
+              'X-Naver-Client-Secret': client_secret // 네이버 API 클라이언트 시크릿
+            }
+          })
+          // .then : fetch 함수로부터 받은 서버 응답을 처리하고, 성공적인 경우에는 다음 데이터 처리 작업을 정의
+          // 비동기 작업의 성공 또는 실패에 따라 다음 작업을 정의
+          .then(response => {
+            if (!response.ok) {
+              // throw new : 예외(오류)를 발생시키는 구문으로, 프로그램 실행 중에 오류 상황을 나타내고 오류 메시지를 설정할 때 사용
+              throw new Error('404 Not Found');
+            }
+            return response.json(); // JSON 응답 처리
+          })
+          .then(data => {
+            displayResults(data); // 결과 표시 함수 호출
+          })
+          .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+          });
+        }
+      }
 
-  searchButton.addEventListener('click', function() {
-    const query = searchInput.value;
-    if (query) {
-      fetch(`/search/news?query=${query}`)
-        .then(response => response.json())
-        .then(data => {
-          displayResults(data);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
-  });
+      // 검색 결과를 화면에 표시하는 함수
+      function displayResults(data) {
+        resultsDiv.innerHTML = ''; // 이전 결과 지우기
 
-  function displayResults(data) {
-    resultsDiv.innerHTML = '';
-    if (data.items) {
-      data.items.forEach(item => {
-        const newsItem = document.createElement('div');
-        newsItem.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a><p>${item.description}</p>`;
-        resultsDiv.appendChild(newsItem);
-      });
-    } else {
-      resultsDiv.innerHTML = '검색 결과가 없습니다.';
-    }
-  }
-});
-
+        if (data.items) {
+          data.items.forEach(item => {
+            // 검색 결과 항목 생성
+            const newsItem = document.createElement('div');
+            // 제목과 설명을 포함한 링크 생성
+            newsItem.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a><p>${item.description}</p>`;
+            resultsDiv.appendChild(newsItem); // 결과 영역에 추가
+          });
+        } else {
+          resultsDiv.innerHTML = '검색 결과가 없습니다.';
+        }
+      }
     </script>
 </body>
 </html>
